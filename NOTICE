@@ -1,0 +1,10 @@
+headless-llm-gateway
+Copyright (c) 2026 M. Walker
+
+This project configures and extends LiteLLM (https://github.com/BerriAI/litellm),
+which is installed from PyPI at the hash-pinned version in requirements.txt and is
+not redistributed here. LiteLLM is licensed under the MIT License by its authors.
+
+The custom providers in gateway/ call the Claude Code CLI (claude) and the Codex
+CLI (codex exec), which each user installs and signs in to separately under their
+own terms. Nothing here grants access to either service.

@@ -1,0 +1,5 @@
+.venv/
+.env
+__pycache__/
+# Proof capture: raw prompts and outputs stay local (decision 5)
+logs/

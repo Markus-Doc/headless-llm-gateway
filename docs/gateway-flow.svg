@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="t d">
+  <title id="t">How the LLM gateway routes a call</title>
+  <desc id="d">Agents and scripts call one OpenAI-compatible endpoint on 127.0.0.1 port 4000 with a role alias such as judge. LiteLLM maps the role to a route: claude -p on the Claude subscription, codex exec on the ChatGPT login, or an API model. CLI routes run locked down with no tools, an empty working folder, one turn and no saved session, and pass the caller's JSON schema to the CLI. Every CLI call appends a proof record with prompt hashes, models used, tokens and the raw output.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1L9 5L0 9" fill="none" stroke="#263d35" stroke-width="1.4" stroke-opacity=".7"/>
+    </marker>
+    <style>
+      .edge { fill:none; stroke:#263d35; stroke-width:1.4; stroke-opacity:.55; }
+      .edge-red { fill:none; stroke:#963d36; stroke-width:1.4; stroke-opacity:.7; }
+      .edge-soft { fill:none; stroke:#263d35; stroke-width:1; stroke-opacity:.35; stroke-dasharray:3 6; }
+      .orbit { fill:none; stroke:#263d35; stroke-width:.7; stroke-opacity:.35; stroke-dasharray:2 5; }
+      .hub { fill:#faf7ee; stroke:#263d35; stroke-width:1.5; }
+      .ring { fill:none; stroke:#963d36; stroke-width:2; }
+      .core { fill:#963d36; }
+      .dot { fill:#3d6b5f; fill-opacity:.75; }
+      .label { font:600 17px 'Schibsted Grotesk', system-ui, sans-serif; fill:#263d35; }
+      .sub { font:400 13.5px 'Schibsted Grotesk', system-ui, sans-serif; fill:#4b6059; }
+      .mono { font:400 12.5px ui-monospace, Consolas, monospace; fill:#4b6059; }
+      .tag { font:600 11px 'Schibsted Grotesk', system-ui, sans-serif; fill:#963d36; letter-spacing:.08em; }
+      .band { fill:#dce2d3; fill-opacity:.55; stroke:#c9bea6; }
+    </style>
+  </defs>
+  <rect width="1200" height="560" fill="#f3ecde"/>
+
+  <!-- callers -->
+  <circle class="dot" cx="92" cy="140" r="4"/><circle class="dot" cx="92" cy="230" r="4"/><circle class="dot" cx="92" cy="320" r="4"/>
+  <text class="tag" x="60" y="98">CALLERS</text>
+  <text class="label" x="108" y="146">Evaluator agent</text>
+  <text class="label" x="108" y="236">Questionnaire</text>
+  <text class="label" x="108" y="326">Any script</text>
+  <text class="mono" x="108" y="166">model="judge"</text>
+  <text class="mono" x="108" y="256">model="claude-cli-sonnet"</text>
+  <text class="mono" x="108" y="346">response_format: json_schema</text>
+  <path class="edge" marker-end="url(#arrow)" d="M290 150Q380 180 452 222"/>
+  <path class="edge" marker-end="url(#arrow)" d="M320 234Q390 236 448 238"/>
+  <path class="edge" marker-end="url(#arrow)" d="M320 326Q390 296 452 256"/>
+
+  <!-- gateway -->
+  <circle class="orbit" cx="520" cy="240" r="70"/>
+  <circle class="ring" cx="520" cy="240" r="24"/>
+  <circle class="core" cx="520" cy="240" r="12"/>
+  <text class="tag" x="440" y="350">ONE LOCAL ENDPOINT</text>
+  <text class="label" x="440" y="372">LiteLLM on 127.0.0.1:4000</text>
+  <text class="sub" x="440" y="392">A local password, role aliases,</text>
+  <text class="sub" x="440" y="410">a hash-pinned install</text>
+
+  <!-- routes -->
+  <path class="edge-red" marker-end="url(#arrow)" d="M592 222Q680 140 790 128"/>
+  <path class="edge" marker-end="url(#arrow)" d="M594 240Q690 240 790 240"/>
+  <path class="edge-soft" marker-end="url(#arrow)" d="M592 258Q680 340 790 352"/>
+
+  <circle class="hub" cx="812" cy="128" r="12"/>
+  <text class="tag" x="836" y="108">SUBSCRIPTION ROUTE</text>
+  <text class="label" x="836" y="130">claude -p, headless</text>
+  <text class="sub" x="836" y="150">Haiku or Sonnet, schema passed to --json-schema</text>
+
+  <circle class="hub" cx="812" cy="240" r="12"/>
+  <text class="tag" x="836" y="220">SUBSCRIPTION ROUTE, EXPERIMENTAL</text>
+  <text class="label" x="836" y="242">codex exec, headless</text>
+  <text class="sub" x="836" y="262">The second model family, schema to --output-schema</text>
+
+  <circle class="hub" cx="812" cy="352" r="12"/>
+  <text class="tag" x="836" y="332">API ROUTE, FOR HOSTED RUNS</text>
+  <text class="label" x="836" y="354">An API model</text>
+  <text class="sub" x="836" y="374">Moving a role here is one line of config</text>
+
+  <!-- lockdown band -->
+  <rect class="band" x="40" y="452" width="1120" height="76" rx="6"/>
+  <text class="tag" x="62" y="476">EVERY CLI CALL</text>
+  <text class="label" x="62" y="498">No tools, empty working folder, one turn, no saved session, API keys stripped</text>
+  <text class="sub" x="62" y="517">Then one proof record: prompt and schema hashes, models used, CLI version, tokens, duration and raw output</text>
+</svg>

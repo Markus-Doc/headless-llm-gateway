@@ -1,0 +1,59 @@
+# Personal LLM gateway. Start it with scripts/start.ps1, which binds 127.0.0.1.
+#
+# Clients ask for a model_name (alias). litellm_params.model decides the route:
+#   anthropic/...   Anthropic API, billed to the Console key in .env
+#   claude-cli/...  `claude -p` on the Claude subscription (gateway/claude_cli.py)
+#   codex-cli/...   `codex exec` on the ChatGPT login (gateway/codex_cli.py)
+# CLI routes are for the owner on localhost only. Hosted deployments use API routes.
+
+model_list:
+  # Subscription routes. Marginal cost is zero, so cost tracking is set to zero.
+  # The CLI's own notional cost is kept in the proof log.
+  - model_name: claude-cli-haiku
+    litellm_params:
+      model: claude-cli/claude-haiku-5-5
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+
+  - model_name: claude-cli-sonnet
+    litellm_params:
+      model: claude-cli/claude-sonnet-5-5
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+
+  - model_name: codex-cli-sol
+    litellm_params:
+      model: codex-cli/gpt-6.1-sol
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+
+  # API route. LiteLLM 1.104.0's price map has no claude-haiku-5-5 entry, so the
+  # list price (USD 0.10 / 0.50 per million tokens, prompts up to 100k) is set here.
+  - model_name: anthropic-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      input_cost_per_token: 0.0000001
+      output_cost_per_token: 0.0000005
+    model_info:
+      # Cache write (5 minute TTL) is 1.25 times input, cache read 0.1 times input.
+      cache_creation_input_token_cost: 0.000000125
+      cache_read_input_token_cost: 0.00000001
+
+router_settings:
+  # Role aliases. Agents ask for the role, and this line decides which route serves it.
+  model_group_alias:
+    judge: claude-cli-haiku
+
+litellm_settings:
+  custom_provider_map:
+    - provider: claude-cli
+      custom_handler: gateway.claude_cli.handler
+    - provider: codex-cli
+      custom_handler: gateway.codex_cli.handler
+  # CLI runs take seconds, not milliseconds. Do not let LiteLLM retry them.
+  num_retries: 0
+  request_timeout: 360
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
